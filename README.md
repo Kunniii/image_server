@@ -23,6 +23,14 @@ Request body
 }
 ```
 
+Response
+
+```json
+{
+    "url": "/images/{hash}.ext"
+}
+```
+
 Supported extensions are `jpg`, `png`, and `jpeg`
 
 Server will hash the image with SHA256,
