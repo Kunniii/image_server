@@ -30,6 +30,8 @@ jobs:
         run: go mod download
 
       - name: Build the application
+        env:
+          GIN_MODE=release
         run: go build -o build/app${{ matrix.os == 'windows-latest' && '.exe' || '' }}
 
       - name: Upload build artifacts
