@@ -11,7 +11,7 @@ import (
 // ImageUploadValidator is a middleware that validates the incoming image upload request
 func ImageUploadValidator(c *gin.Context) {
     var req struct {
-        Base64 string `json:"base_64" binding:"required"`
+        Base64 string `json:"base64" binding:"required"`
         Ext    string `json:"ext" binding:"required"`
     }
 

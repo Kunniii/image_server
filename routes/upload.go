@@ -14,7 +14,7 @@ import (
 
 // JSON request struct
 type ImageUploadRequest struct {
-	Base64 string `json:"base_64" binding:"required"`
+	Base64 string `json:"base64" binding:"required"`
 	Ext    string `json:"ext" binding:"required"`
 }
 

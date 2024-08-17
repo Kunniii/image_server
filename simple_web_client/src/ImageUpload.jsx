@@ -22,7 +22,7 @@ function ImageUpload() {
       const ext = file.name.split(".").pop();
 
       const payload = {
-        base_64: base64String,
+        base64: base64String,
         ext: ext,
       };
 
