@@ -1,0 +1,42 @@
+name: Go CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go-version: 1.23.0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.0
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build the application
+        run: |
+          GOOS=${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }} \
+          GOARCH=amd64 \
+          go build -o build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-build-${{ matrix.os }}
+          path: ./build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
