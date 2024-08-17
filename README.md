@@ -36,3 +36,25 @@ You can retrieve the image with `<sha256 hash>.[png, jpeg, jpg]`
 This endpoint will retrieve the image that you have uploaded.
 From the hash calculated when uploading the image and the extension,
 you can access the image from server.
+
+
+## Run the server
+
+### Build from source
+
+To build the server make sure you have `go` version `1.23.0` or higher.
+
+```sh
+go mod tidy
+go build
+```
+
+The compiled executable is `image_server`, and can be found at the current working directory.
+
+
+### Using Docker
+
+
+```sh
+docker run -v ./images:/images -p 127.0.0.1:80:8080 ghcr.io/kunniii/image_server:latest
+```
