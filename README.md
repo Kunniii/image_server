@@ -39,11 +39,15 @@ The extension will be kept as is.
 
 You can retrieve the image with `<sha256 hash>.[png, jpeg, jpg]`
 
-#### GET `/images/*hash.ext`
+#### GET `/images/*hash.ext?w=<int>&h=<int>`
+
+You can retrieve the image with specific width and height.
 
 This endpoint will retrieve the image that you have uploaded.
 From the hash calculated when uploading the image and the extension,
 you can access the image from server.
+
+
 
 
 ## Run the server
