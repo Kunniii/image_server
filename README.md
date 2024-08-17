@@ -43,6 +43,8 @@ You can retrieve the image with `<sha256 hash>.[png, jpeg, jpg]`
 
 You can retrieve the image with specific width and height.
 
+I would recommend to only use one parameter at a time to keep the aspect ratio of the image.
+
 This endpoint will retrieve the image that you have uploaded.
 From the hash calculated when uploading the image and the extension,
 you can access the image from server.
