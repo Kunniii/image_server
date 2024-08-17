@@ -11,15 +11,12 @@ import (
 
 func main() {
 	r := gin.Default()
-	
 	r.Use(cors.Default())
 
 	// Register routes
 	routes.RegisterPingRoute(r)
 	routes.RegisterUploadRoute(r)
-
-	// Serve static files in the "images" directory
-	r.Static("/images", "./images")
+	routes.RegisterImageRoute(r)
 
 	// Ensure the images directory exists
 	os.MkdirAll("images", os.ModePerm)
