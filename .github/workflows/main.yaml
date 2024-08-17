@@ -30,10 +30,7 @@ jobs:
         run: go mod download
 
       - name: Build the application
-        run: |
-          GOOS=${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }} \
-          GOARCH=amd64 \
-          go build -o build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
+        run: go build -o build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
