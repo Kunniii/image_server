@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
@@ -16,7 +17,6 @@ import (
 func RegisterImageRoute(r *gin.Engine) {
 	r.GET("/images/:hash", func(c *gin.Context) {
 		hash := c.Param("hash")
-		ext := filepath.Ext(hash)
 		path := filepath.Join("images", hash)
 
 		file, err := os.Open(path)
@@ -26,24 +26,41 @@ func RegisterImageRoute(r *gin.Engine) {
 		}
 		defer file.Close()
 
-		img, _, err := image.Decode(file)
+		img, format, err := image.Decode(file)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to decode image"})
 			return
 		}
 
-		width, _ := strconv.Atoi(c.Query("w"))
-		height, _ := strconv.Atoi(c.Query("h"))
+		imgWidth := img.Bounds().Dx()
+		imgHeight := img.Bounds().Dy()
+
+		reqWidth := c.Query("w")
+		reqHeight := c.Query("h")
+
+		var width, height int
+		if reqWidth != "" {
+			width, err = strconv.Atoi(reqWidth)
+			if err != nil || width > imgWidth {
+				width = imgWidth
+			}
+		}
+		if reqHeight != "" {
+			height, err = strconv.Atoi(reqHeight)
+			if err != nil || height > imgHeight {
+				height = imgHeight
+			}
+		}
 
 		if width > 0 || height > 0 {
 			img = resize.Resize(uint(width), uint(height), img, resize.Lanczos3)
 		}
 
-		c.Header("Content-Type", "image/"+ext[1:])
-
-		if ext == ".png" {
+		if strings.ToLower(format) == "png" {
+			c.Writer.Header().Set("Content-Type", "image/png")
 			png.Encode(c.Writer, img)
-		} else if ext == ".jpg" || ext == ".jpeg" {
+		} else {
+			c.Writer.Header().Set("Content-Type", "image/jpeg")
 			jpeg.Encode(c.Writer, img, nil)
 		}
 	})
