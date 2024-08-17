@@ -26,7 +26,7 @@ Request body
 Supported extensions are `jpg`, `png`, and `jpeg`
 
 Server will hash the image with SHA256,
-the hash out put will be the name of the image.
+the hash result will be the name of the image.
 The extension will be kept as is.
 
 You can retrieve the image with `<sha256 hash>.[png, jpeg, jpg]`
