@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
@@ -30,10 +30,14 @@ jobs:
         run: go mod download
 
       - name: Build the application
-        run: go build -o build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
+        run: |
+          GOOS=${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} \
+          GOARCH=amd64 \
+          go build -o build/app${{ matrix.os == 'windows-latest' && '.exe' || '' }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: go-build-${{ matrix.os }}
-          path: ./build/app-${{ matrix.os == 'windows-latest' && echo 'windows' || echo 'linux' }}.exe
+          path: |
+            ./build/app${{ matrix.os == 'windows-latest' && '.exe' || '' }}
