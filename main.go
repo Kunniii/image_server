@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/kunniii/image_server/routes"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,8 @@ import (
 
 func main() {
 	r := gin.Default()
+	
+	r.Use(cors.Default())
 
 	// Register routes
 	routes.RegisterPingRoute(r)
@@ -22,5 +25,5 @@ func main() {
 	os.MkdirAll("images", os.ModePerm)
 
 	// Start the server on port 8080
-	r.Run(":8080")
+	r.Run("0.0.0.0:8080")
 }

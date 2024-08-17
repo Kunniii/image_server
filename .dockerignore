@@ -2,3 +2,4 @@ vendor
 image_server
 *.rest
 images
+simple_web_client

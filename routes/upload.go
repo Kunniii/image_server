@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"mime/multipart"
+	"encoding/base64"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,38 +12,49 @@ import (
 	"github.com/kunniii/image_server/utils"
 )
 
+// JSON request struct
+type ImageUploadRequest struct {
+	Base64 string `json:"base_64" binding:"required"`
+	Ext    string `json:"ext" binding:"required"`
+}
+
 func RegisterUploadRoute(r *gin.Engine) {
 	r.POST("/upload", utils.ImageUploadValidator, func(c *gin.Context) {
-		file, _ := c.Get("file")
-		ext, _ := c.Get("extension")
 
-		// Generate a UUID for the image name
+		base64Image := c.GetString("base64")
+		ext := c.GetString("extension")
+
+		imageData, err := base64.StdEncoding.DecodeString(base64Image)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid base64 data"})
+			return
+		}
+
 		imageUUID := uuid.New().String()
-		tempPath := filepath.Join("images", imageUUID+ext.(string))
+		tempPath := filepath.Join("images", imageUUID+"."+ext)
 
-		// Save the image to a temporary file
-		if err := c.SaveUploadedFile(file.(*multipart.FileHeader), tempPath); err != nil {
+		if err := os.WriteFile(tempPath, imageData, 0644); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save image"})
 			return
 		}
 
-		// Compute the hash of the image file
 		hash, err := utils.ComputeFileHash(tempPath)
 		if err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to compute file hash"})
 			return
 		}
 
-		// Construct the final path using the hash
-		finalPath := filepath.Join("images", hash+ext.(string))
+		finalPath := filepath.Join("images", hash+"."+ext)
 
-		// Rename the file to use the hash as its name
 		if err := os.Rename(tempPath, finalPath); err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to rename file"})
 			return
 		}
 
-		// Return the image URL
-		c.JSON(http.StatusOK, gin.H{"url": "/images/" + hash + ext.(string)})
+		c.JSON(http.StatusOK, gin.H{"url": "/images/" + hash + "." + ext})
 	})
 }
